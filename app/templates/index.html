@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Recommender</title>
+</head>
+<body>
+    <h2>Research Paper Recommendation System</h2>
+    <form method="post" action="/recommend">
+        <input type="text" name="query" placeholder="Enter topic..." required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if query %}
+    <h3>Results for: "{{ query }}"</h3>
+    <ul>
+        {% for paper in recommendations %}
+        <li>
+            <b>{{ paper.titles }}</b><br>  <!-- Updated to match column name -->
+            <i>Summary:</i> {{ paper.summaries }}<br>
+            <i>Terms:</i> {{ paper.terms }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,26 @@
+import pandas as pd
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
+# Load research paper dataset
+df = pd.read_csv("data/research_papers.csv")
+
+# Preprocessing
+stop_words = set(stopwords.words("english"))
+df["processed_text"] = df["abstract"].fillna("").apply(lambda x: " ".join([word for word in x.lower().split() if word not in stop_words]))
+
+# Vectorization
+vectorizer = TfidfVectorizer(stop_words="english")
+tfidf_matrix = vectorizer.fit_transform(df["processed_text"])
+
+def get_recommendations(query, top_n=5):
+    query_tfidf = vectorizer.transform([query])
+    similarity_scores = cosine_similarity(query_tfidf, tfidf_matrix)
+    top_indices = similarity_scores.argsort()[0][-top_n:][::-1]
+    
+    recommendations = df.iloc[top_indices][["title", "author", "year", "link"]].to_dict(orient="records")
+    return recommendations
